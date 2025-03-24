@@ -8,7 +8,7 @@ LABEL Description="FreePBX with Asterisk, based on Debian."
 ENV APP_NAME "astpbx"
 ENV DEBIAN_FRONTEND "noninteractive"
 
-## https://downloads.asterisk.org/pub/telephony/asterisk/
+## https://downloads.asterisk.org/pub/telephony/asterisk/releases/
 ARG ASTERISK_VER="20.11.1"
 
 ## https://github.com/FreePBX/core/tags
