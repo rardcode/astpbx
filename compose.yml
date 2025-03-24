@@ -1,0 +1,24 @@
+
+services:
+  db:
+    image: linuxserver/mariadb
+    container_name: astpbx-db
+    env_file:
+    - envfile
+    volumes:
+      - ./data/db:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  app:
+    image: rardcode/astpbx
+    container_name: astpbx
+    #hostname: astpbx.domain.com
+    volumes:
+      - ./data/pbx:/data
+    env_file:
+      - envfile
+    network_mode: host
+    depends_on:
+    - db
+    restart: unless-stopped
