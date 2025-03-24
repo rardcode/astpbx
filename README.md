@@ -1,4 +1,4 @@
-# PBX server with FreePBX & Asterisk, based on Debian.
+# FreePBX with Asterisk, based on Debian.
 
 ## Quick reference
 * Where to file issues:
