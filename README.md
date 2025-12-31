@@ -36,7 +36,7 @@ docker compose up -d
 ```
 
 ## Changelog
-v1.0.0 - 31.12.2025
+v20.17.16 - 31.12.2025
 - Debian v. 13.2
 - Asterisk v. 20.17.0
 - FreePBX v. 16.0
