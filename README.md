@@ -3,7 +3,7 @@ Asterisk communication server with FreePBX GUI.
 
 ## Quick reference
 * Where to file issues:
-[GitHub](https://github.com/rardcode/astpbx)
+[GitHub](https://github.com/rardcode/astpbx/issues)
 
 * Supported architectures: amd64 , armv7 , arm64v8
 
@@ -20,7 +20,7 @@ cd astpbx
 ```
 docker compose up -d
 ```
-### Upgrade
+### Upgrade (...to be tested)
 1. Clone repo
 ```
 cd /opt/astpbx
