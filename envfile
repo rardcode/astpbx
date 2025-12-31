@@ -1,0 +1,8 @@
+MYSQL_ROOT_PASSWORD=rootpass
+TZ=Europe/Rome
+#POSTFIX_SENDER_MAIL=sender@domain.com
+#POSTFIX_RECIPIENT_MAIL=recipient@domain.com
+#POSTFIX_SMTP_PORT=25 # default 25
+#POSTFIX_SMTP_TLS=ON # default OFF
+#POSTFIX_SMTP_USER=smtp_user
+#POSTFIX_SMTP_PASSWD=smtp_pwd

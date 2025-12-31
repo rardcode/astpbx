@@ -1,0 +1,24 @@
+
+services:
+  db:
+    image: mariadb:10.11.15
+    container_name: astpbx-db
+    env_file:
+    - envfile
+    volumes:
+      - ./data/db:/var/lib/mysql
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  app:
+    image: local/astpbx
+    container_name: astpbx
+    #hostname: astpbx.domain.com
+    env_file:
+      - envfile
+    volumes:
+      - ./data/pbx:/data
+    network_mode: host
+    depends_on:
+    - db
+    restart: unless-stopped
