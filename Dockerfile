@@ -9,13 +9,15 @@ ENV APP_NAME="astpbx"
 ENV DEBIAN_FRONTEND="noninteractive"
 
 ## https://downloads.asterisk.org/pub/telephony/asterisk/releases/
-ARG ASTERISK_VER="20.17.0"
+## https://www.asterisk.org/downloads/asterisk/all-asterisk-versions/
+ARG ASTERISK_VER="22.7.0"
 
 ## https://github.com/FreePBX/core/tags
-ARG FREEPBX_VER="16.0"
-ENV FREEPBX_VER=${FREEPBX_VER}
+ARG FREEPBX_VER="17.0"
 
-ARG PHP_VER="7.4"
+#ENV FREEPBX_VER=${FREEPBX_VER}
+
+ARG PHP_VER="8.2"
 
 RUN set -xe && \
   : "---------- ESSENTIAL packages INSTALLATION ----------" && \
@@ -186,3 +188,4 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Rome /etc/localtime && echo Europe/Rome >
 ADD rootfs /
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

@@ -1,10 +1,9 @@
 #!/bin/bash
-set -x
+#set -e
 
 : ${path_list:="
 /var/lib/asterisk
 /var/spool/asterisk
-/var/spool/cron/crontabs
 /home/asterisk
 /var/log
 /var/www/html
@@ -13,6 +12,10 @@ set -x
 "}
 
 DEST_PATH="/data"
+
+echo "[client]
+ssl=0
+password=${MYSQL_ROOT_PASSWORD}" > /root/.my.cnf
 
 function check_dirs {
 [ -e "${DEST_PATH}/.pbx_first_installation" ] && rm "${DEST_PATH}/.pbx_first_installation"
@@ -35,7 +38,7 @@ for path_name in $path_list; do
   fi
  rm -rf ${path_name}
  fi
- ln -s ${DEST_PATH}${path_name} ${path_name}
+ ln -fs ${DEST_PATH}${path_name} ${path_name}
 done
 }
 
@@ -46,16 +49,6 @@ echo "-----------------------------------------"
 if [ ! -e ${DEST_PATH}/.pbx_initialized ]; then
   echo ".. FreePBX need to be installed..."
   freepbx_install
-else
-  ./usr/local/src/freepbx/start_asterisk start
-  FREEPBX_VER=$(echo $FREEPBX_VER | cut -d . -f1)
-  FREEPBX_VER_INSTALLED="$(/data/var/lib/asterisk/bin/fwconsole -V | awk '{print $NF}' | awk -F'.' '{print $1}')"
-  if [ $FREEPBX_VER_INSTALLED -lt $FREEPBX_VER ]; then
-   echo ".. FreePBX need to be upgraded..."
-   freepbx_upgrade
-  else
-   echo ".. FreePBX DON'T need to be upgraded..."
-  fi
 fi
 }
 
@@ -63,9 +56,6 @@ function freepbx_install {
 echo "-----------------------------------------"
 echo "         FreePBX INSTALLATION ..."
 echo "-----------------------------------------"
-
-echo "[client]
-ssl=0" > /root/.my.cnf
 
 myn=1 ; myt=10
 until [ $myn -eq $myt ]; do
@@ -87,6 +77,7 @@ if [ ! -e ${DEST_PATH}/.db_initialized ]; then
   mariadb -h 127.0.0.1 -P 3306 -u root --password=${MYSQL_ROOT_PASSWORD} -N -B -e "GRANT ALL PRIVILEGES ON asterisk.* TO 'asterisk'@'%' WITH GRANT OPTION;"
   mariadb -h 127.0.0.1 -P 3306 -u root --password=${MYSQL_ROOT_PASSWORD} -N -B -e "CREATE DATABASE IF NOT EXISTS asteriskcdrdb"
   mariadb -h 127.0.0.1 -P 3306 -u root --password=${MYSQL_ROOT_PASSWORD} -N -B -e "GRANT ALL PRIVILEGES ON asteriskcdrdb.* TO 'asterisk'@'%' WITH GRANT OPTION;"
+  mariadb -h 127.0.0.1 -P 3306 -u root --password=${MYSQL_ROOT_PASSWORD} -N -B -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
   touch ${DEST_PATH}/.db_initialized
 else
   echo "--> INFO: DB initializing skipped."
@@ -96,9 +87,9 @@ echo "---------- Freepbx INSTALLATION ----------"
 cd /usr/local/src/freepbx
 
 mkdir -p /var/lib/asterisk/sbin/
-ln -s /usr/local/src/freepbx/amp_conf/bin/fwconsole /usr/local/bin/
-ln -s /usr/local/src/freepbx/amp_conf/bin/fwconsole /var/lib/asterisk/sbin/
-ln -s /usr/local/src/freepbx/amp_conf/bin/amportal  /usr/local/bin/
+ln -fs /usr/local/src/freepbx/amp_conf/bin/fwconsole /usr/local/bin/
+ln -fs /usr/local/src/freepbx/amp_conf/bin/fwconsole /var/lib/asterisk/sbin/
+ln -fs /usr/local/src/freepbx/amp_conf/bin/amportal  /usr/local/bin/
 chown -R asterisk: /var/lib/asterisk
 
 ./start_asterisk start
@@ -189,26 +180,7 @@ fwconsole -V > "${DEST_PATH}/.pbx_first_installation"
 
 fwconsole chown
 fwconsole reload
-fwconsole stop
-}
-
-function freepbx_upgrade {
-echo "-----------------------------------------"
-echo "       FreePBX UPGRADING..."
-echo "-----------------------------------------"
-fwconsole start
-fwconsole ma upgradeall
-fwconsole chown
-fwconsole reload
-fwconsole ma downloadinstall versionupgrade
-fwconsole reload
-fwconsole versionupgrade --check
-fwconsole versionupgrade --upgrade
-fwconsole chown
-fwconsole reload
-fwconsole ma upgradeall
-fwconsole chown
-fwconsole reload
+fwconsole -V | awk '{print $NF}' | awk -F'.' '{print $1}' > ${DEST_PATH}/.freepbx_version
 fwconsole stop
 }
 
@@ -245,7 +217,7 @@ echo "        Postfix setup..."
 echo "-----------------------------------------"
 DOCKER_HOSTNAME=$(cat /etc/hostname)
 ## since postfix uses many processes in chroot, it needs the name resolution file in its chroot
-cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
+#cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
 
 ## hostname setup
 sed -i "s/^myhostname =.*/myhostname = ${DOCKER_HOSTNAME}/g" /etc/postfix/main.cf
@@ -310,35 +282,67 @@ rm /etc/fail2ban/jail.d/defaults-debian.conf
 
 }
 
-function custom_bashrc {
-echo '
-export LS_OPTIONS="--color=auto"
-alias "ls=ls $LS_OPTIONS"
-alias "ll=ls $LS_OPTIONS -la"
-alias "l=ls $LS_OPTIONS -lA"
-'
+function cron_sqlBackup {
+echo "-------------------------------"
+echo "       Cron sqlBackup setup..."
+echo "-------------------------------"
+[ ! -e /var/spool/asterisk/backup ] && mkdir -p /var/spool/asterisk/backup
+chmod +x /etc/backup-db.sh
+echo '00 00 * * 6 root /etc/backup-db.sh' >> /etc/crontab
 }
 
-function set_bashrc {
-echo "-----------------------------------------"
-echo " .bashrc file setup..."
-echo "-----------------------------------------"
-custom_bashrc | tee /root/.bashrc
-echo 'export PS1="\[\e[35m\][\[\e[31m\]\u\[\e[36m\]@\[\e[32m\]\h\[\e[90m\] \w\[\e[35m\]]\[\e[0m\]# "' >> /root/.bashrc
-for userhome in $(ls /home); do
-[ -e /home/$userhome ] && echo 'export PS1="\[\e[35m\][\[\e[33m\]\u\[\e[36m\]@\[\e[32m\]\h\[\e[90m\] \w\[\e[35m\]]\[\e[0m\]$ "' >> /home/$userhome/.bashrc
-done
+custom_bashrc() {
+cat <<'EOF'
+export LS_OPTIONS="--color=auto"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -la'
+alias l='ls $LS_OPTIONS -lA'
+
+# prompt SOLO per shell interattive
+if [[ $- == *i* ]]; then
+  if [ "$(id -u)" -eq 0 ]; then
+    PS1="\[\e[35m\][\[\e[31m\]\u\[\e[36m\]@\[\e[32m\]\h\[\e[90m\] \w\[\e[35m\]]\[\e[0m\]# "
+  else
+    PS1="\[\e[35m\][\[\e[33m\]\u\[\e[36m\]@\[\e[32m\]\h\[\e[90m\] \w\[\e[35m\]]\[\e[0m\]$ "
+  fi
+  export PS1
+fi
+EOF
 }
+
+setup_bashrc() {
+  for home in /root /home/*; do
+    [ -d "$home" ] || continue
+    bashrc="$home/.bashrc"
+
+    # crea se manca
+    [ -f "$bashrc" ] || touch "$bashrc"
+
+    # evita duplicazioni
+    grep -q '### CUSTOM BASHRC ###' "$bashrc" && continue
+
+    {
+      echo ''
+      echo '### CUSTOM BASHRC ###'
+      custom_bashrc
+    } >> "$bashrc"
+  done
+}
+
 
 [ -e "${DEST_PATH}/.pbx_initialized" ] && check_dirs
 check_freepbx
+cron_sqlBackup
 fix_permissions
 service_asterisk
 service_postfix
 service_fail2ban
-set_bashrc
 [ -e "${DEST_PATH}/.pbx_first_installation" ] && check_dirs
 
-CMD="$@"
-[ -z $CMD ] && export CMD="supervisord -c /etc/supervisor/supervisord.conf"
-$CMD
+setup_bashrc
+
+# print cmd that will be executed
+echo "Starting: $*" >&2
+
+# launch CMD
+exec "$@"
