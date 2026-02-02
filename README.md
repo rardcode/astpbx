@@ -21,10 +21,9 @@ docker compose up -d
 ```
 
 ## Backup
-AstPbx has a script for auto-backup db asterisk & asteriskcdrdb.\\
-Db backup go in `/var/spool/asterisk/backup/`.\\
-
-Suggested: config a backup via GUI for __ASTETCDIR__, __ASTLIBDIR__ & __ASTSPOOLDIR__. In this last exclude pattern *tar.gz.\\
+AstPbx has a script for auto-backup db asterisk & asteriskcdrdb.\
+Db backup go in `/var/spool/asterisk/backup/`.\
+Suggested: config a backup via GUI for __ASTETCDIR__, __ASTLIBDIR__ & __ASTSPOOLDIR__. In this last exclude pattern *tar.gz.
 
 
 ## Update
