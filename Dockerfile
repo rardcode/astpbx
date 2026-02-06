@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND="noninteractive"
 
 ## https://downloads.asterisk.org/pub/telephony/asterisk/releases/
 ## https://www.asterisk.org/downloads/asterisk/all-asterisk-versions/
-ARG ASTERISK_VER="23.2.1"
+ARG ASTERISK_VER="23.2.2"
 
 ## https://github.com/FreePBX/core/tags
 ARG FREEPBX_VER="17.0"

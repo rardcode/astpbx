@@ -33,6 +33,9 @@ docker compose pull && docker compose up -d
 ```
 
 ## Changelog
+v2322.17 - 06.02.2026
+- Asterisk v.23.2.2
+
 v2321.17 - 30.01.2026
 - Asterisk v.23.2.1
 
