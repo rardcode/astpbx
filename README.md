@@ -35,18 +35,4 @@ docker compose pull && docker compose up -d
 ## Changelog
 v2322.17 - 06.02.2026
 - Asterisk v.23.2.2
-
-v2321.17 - 30.01.2026
-- Asterisk v.23.2.1
-
-v23.2.17 - 20.01.2026
-- Asterisk v.23.2.0
-
-v23.1.17 - 20.01.2026
 - Debian v.13.3
-- Asterisk v.23.1.0
-
-v22.7.17 - 02.12.2025
-- Debian v.13.2
-- Asterisk v.22.7.0
-- FreePBX v.17.0
