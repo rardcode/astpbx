@@ -1,0 +1,6 @@
+.directory
+build.sh
+deploy.sh
+data
+compose-test.yml
+.gitea
