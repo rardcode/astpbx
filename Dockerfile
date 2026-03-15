@@ -1,6 +1,6 @@
 
 ## https://hub.docker.com/_/debian/tags
-FROM debian:13.2-slim
+FROM debian:13.3-slim
 
 LABEL org.opencontainers.image.authors="rardcode <sak37564@ik.me>"
 LABEL Description="FreePBX with Asterisk, based on Debian."
