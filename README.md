@@ -3,7 +3,7 @@ Asterisk communication server.
 
 ## Quick reference
 * Where to file issues:
-[GitHub](https://github.com/rardcode/astpbx/issues)
+[GitHub](https://github.com/gianlucavagnuzzi/astpbx/issues)
 
 * Supported architectures: amd64 , armv7 , arm64v8
 
