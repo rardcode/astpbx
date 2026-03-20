@@ -1,6 +1,6 @@
 
 ## https://hub.docker.com/_/debian/tags
-FROM debian:13.3-slim
+FROM debian:13.4-slim
 
 LABEL org.opencontainers.image.authors="rardcode <sak37564@ik.me>"
 LABEL Description="FreePBX with Asterisk, based on Debian."
@@ -9,7 +9,6 @@ ENV APP_NAME="astpbx"
 ENV DEBIAN_FRONTEND="noninteractive"
 
 ## https://downloads.asterisk.org/pub/telephony/asterisk/releases/
-## https://www.asterisk.org/downloads/asterisk/all-asterisk-versions/
 ARG ASTERISK_VER="23.2.2"
 
 ## https://github.com/FreePBX/core/tags
