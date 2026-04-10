@@ -9,7 +9,7 @@ ENV APP_NAME="astpbx"
 ENV DEBIAN_FRONTEND="noninteractive"
 
 ## https://downloads.asterisk.org/pub/telephony/asterisk/releases/
-ARG ASTERISK_VER="23.2.2"
+ARG ASTERISK_VER="23.3.0"
 
 ## https://github.com/FreePBX/core/tags
 ARG FREEPBX_VER="17.0"

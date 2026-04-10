@@ -33,6 +33,9 @@ docker compose pull && docker compose up -d
 ```
 
 ## Changelog
+### v2330.17-3 - 10.04.2026
+- Asterisk v.23.3.0
+
 ### v2322.17-4 - 20.03.2026
 - Debian v.13.4
 
